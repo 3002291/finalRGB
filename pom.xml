@@ -6,7 +6,7 @@
 	<version>1.0.0.0</version>
 	<packaging>jar</packaging>
 	<name>douzone-comet-service-eh-ehsevr</name>
-	<description>EH-기준정보관리-환경기준정보</description> 
+	<description></description> 
 	<properties>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
