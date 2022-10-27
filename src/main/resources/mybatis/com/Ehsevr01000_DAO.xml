@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.comet.service.eh.ehsevr.dao.Ehsevr01000_DAO">
+
+
+	<select id="selectList" parameterType="hashmap" resultType="com.douzone.comet.service.eh.ehsevr.models.Ehsevr01000">
+		/* 폭조기측정항목등록 조회*/
+		SELECT	COMPANY_CD,
+				PLANT_CD,
+				ARTTK_CD,
+				ARTTK_NM,
+				FACI_CD,
+				FACI_NM,
+				SQ_NO,
+				MESR_CLAS_CD,
+				MESR_CLAS_NM,
+				RMK_DC,
+				INSERT_ID,
+				INSERT_IP,
+				INSERT_MCADDR_NM,
+				INSERT_DTS,
+				UPDATE_ID,
+				UPDATE_IP,
+				UPDATE_MCADDR_NM,
+				UPDATE_DTS
+		FROM @{dzparam_dbname}EH_ARTTKCLAS_MST
+		WHERE COMPANY_CD = #{P_COMPANY_CD}
+		<if test='P_PLANT_CD != null and !"".equals(P_PLANT_CD)'>
+			AND PLANT_CD = #{P_PLANT_CD}
+		</if>
+		<if test='P_KEYWORD != null and P_KEYWORD != ""'>
+		AND (  UPPER(MESR_CLAS_CD) 	LIKE '%'||#{P_KEYWORD}||'%' 
+			OR UPPER(MESR_CLAS_NM) 	LIKE '%'||#{P_KEYWORD}||'%'
+			)
+		</if>		
+		 ORDER BY	COMPANY_CD, PLANT_CD, ARTTK_CD, FACI_CD, SQ_NO, MESR_CLAS_CD
+	</select>
+
+
+	<insert id="insertEhsevr01000">
+		INSERT INTO @{dzparam_dbname}EH_ARTTKCLAS_MST (
+				COMPANY_CD,
+				PLANT_CD,
+				ARTTK_CD,
+				ARTTK_NM,
+				FACI_CD,
+				FACI_NM,
+				SQ_NO,
+				MESR_CLAS_CD,
+				MESR_CLAS_NM,
+				RMK_DC,
+				INSERT_ID,
+				INSERT_IP,
+				INSERT_MCADDR_NM,
+				INSERT_DTS,
+				UPDATE_ID,
+				UPDATE_IP,
+				UPDATE_MCADDR_NM,
+				UPDATE_DTS
+		) VALUES (
+				#{company_cd},
+				#{plant_cd},
+				#{arttk_cd},
+				#{arttk_nm},
+				#{faci_cd},
+				#{faci_nm},
+				#{sq_no},
+				#{mesr_clas_cd},
+				#{mesr_clas_nm},
+				#{rmk_dc},
+				#{insert_id},
+				#{insert_ip},
+				#{insert_mcaddr_nm},
+				SYSDATE,
+				#{update_id},
+				#{update_ip},
+				#{update_mcaddr_nm},
+				SYSDATE		
+		)		
+	</insert>
+
+	<update id="updateEhsevr01000">		
+		UPDATE	@{dzparam_dbname}EH_ARTTKCLAS_MST
+		SET		
+				ARTTK_NM 	= #{arttk_nm},
+				FACI_NM		= #{faci_nm},
+				SQ_NO		= #{sq_no},
+				MESR_CLAS_CD= #{mesr_clas_cd},
+				MESR_CLAS_NM= #{mesr_clas_nm},
+				RMK_DC		= #{rmk_dc},
+				UPDATE_ID	= #{update_id},
+				UPDATE_IP	= #{update_ip},
+				UPDATE_MCADDR_NM = #{update_mcaddr_nm},
+				UPDATE_DTS	= SYSDATE
+		WHERE	COMPANY_CD = #{company_cd}
+		AND		PLANT_CD	= #{plant_cd} -- 공장코드
+		AND		ARTTK_CD	= #{arttk_cd} -- 폭기조코드
+		AND		FACI_CD		= #{faci_cd} -- 시설코드
+		AND		MESR_CLAS_CD= #{mesr_clas_cd} -- 측정항목코드
+	</update>
+				
+	<delete id="deleteEhsevr01000">
+		DELETE
+		FROM	@{dzparam_dbname}EH_ARTTKCLAS_MST
+		WHERE	COMPANY_CD = #{company_cd}
+		AND		PLANT_CD	= #{plant_cd} -- 공장코드
+		AND		ARTTK_CD	= #{arttk_cd} -- 폭기조코드
+		AND		FACI_CD		= #{faci_cd} -- 시설코드
+		AND		MESR_CLAS_CD= #{mesr_clas_cd} -- 측정항목코드
+	</delete>
+
+</mapper>
