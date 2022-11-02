@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.comet.service.eh.ehsevr.dao.Ehsevr00200_DAO">
+
+	<select id="selectList" resultType="com.douzone.comet.service.eh.ehsevr.models.Ehsevr00200">
+		SELECT 
+			A.COMPANY_CD 
+			, A.PLANT_CD 
+			, B.PLANT_NM 
+			, A.EQP_CD 
+			, A.EQP_NM 
+			, A.ENV_TSK_FG_CD 
+			, A.ENV_TSK_FG_NM 
+			, A.DSCHFCLT_CD 
+			, A.DSCHFCLT_NM 
+			, A.SQ_NO 
+			, A.RMK_DC 
+		FROM EH_WDSCHFCLT_MST A
+		LEFT OUTER JOIN MA_PLANT_MST B
+		ON A.COMPANY_CD = B.COMPANY_CD 
+			AND A.PLANT_CD = B.PLANT_CD 
+		WHERE A.COMPANY_CD = #{P_COMPANY_CD}
+		<if test='P_PLANT_CD != null and !"".equals(P_PLANT_CD)'>
+			AND A.PLANT_CD = #{P_PLANT_CD}
+		</if>
+		<if test='P_DSCHFCLT_NM != null and P_DSCHFCLT_NM != ""'>
+		AND (  UPPER(A.DSCHFCLT_NM) 	LIKE '%'||#{P_DSCHFCLT_NM}||'%' )
+		</if>
+	</select>
+	
+	<select id="mstDupCheck" resultType="int">
+		SELECT COUNT(1) 
+		FROM @{dzparam_dbname}EH_WDSCHFCLT_MST 
+		WHERE COMPANY_CD = #{company_cd}
+			AND PLANT_CD = #{plant_cd} 
+			AND ENV_TSK_FG_CD = #{env_tsk_fg_cd} 
+			AND DSCHFCLT_CD = #{dschfclt_cd} 
+	</select>
+	
+	<insert id="insertEhsevr00200">
+		INSERT INTO @{dzparam_dbname}EH_WDSCHFCLT_MST (
+				COMPANY_CD
+				,PLANT_CD
+				,EQP_CD
+				,EQP_NM
+				,ENV_TSK_FG_CD
+				,ENV_TSK_FG_NM
+				,DSCHFCLT_CD
+				,DSCHFCLT_NM
+				,SQ_NO
+				,RMK_DC
+				,INSERT_ID
+				,INSERT_IP
+				,INSERT_MCADDR_NM
+				,INSERT_DTS
+		) VALUES (
+				#{company_cd}
+				, #{plant_cd}
+				, #{eqp_cd}
+				, #{eqp_nm}
+				, #{env_tsk_fg_cd}
+				, #{env_tsk_fg_nm}
+				, #{dschfclt_cd}
+				, #{dschfclt_nm}
+				, #{sq_no}
+				, #{rmk_dc}
+				, #{insert_id}
+				, #{insert_ip}
+				, #{insert_mcaddr_nm}
+				, SYSDATE
+		)
+	</insert>
+	
+	
+	<update id="updateEhsevr00200">		
+		UPDATE	@{dzparam_dbname}EH_WDSCHFCLT_MST
+		SET		
+			<if test='eqp_cd neq null'> EQP_CD = #{eqp_cd}, </if>
+			<if test='eqp_nm neq null'> EQP_NM = #{eqp_nm}, </if>
+			<if test='dschfclt_nm neq null'> DSCHFCLT_NM = #{dschfclt_nm}, </if>
+			<if test='sq_no neq null'> SQ_NO = #{sq_no}, </if>
+			<if test='rmk_dc neq null'> RMK_DC = #{rmk_dc}, </if>
+			UPDATE_ID = #{update_id},
+			UPDATE_IP = #{update_ip},
+			UPDATE_MCADDR_NM = #{update_mcaddr_nm},
+			UPDATE_DTS = SYSDATE
+		WHERE	COMPANY_CD = #{company_cd}
+			AND		PLANT_CD	= #{plant_cd} 
+			AND		ENV_TSK_FG_CD	= #{env_tsk_fg_cd}
+			AND		DSCHFCLT_CD		= #{dschfclt_cd} 
+	</update>
+	
+	
+	<delete id="deleteEhsevr00200">
+		DELETE
+		FROM	@{dzparam_dbname}EH_WDSCHFCLT_MST
+		WHERE	COMPANY_CD = #{company_cd}
+			AND		PLANT_CD	= #{plant_cd} 
+			AND		ENV_TSK_FG_CD	= #{env_tsk_fg_cd}
+			AND		DSCHFCLT_CD		= #{dschfclt_cd} 
+	</delete>
+	
+</mapper>
