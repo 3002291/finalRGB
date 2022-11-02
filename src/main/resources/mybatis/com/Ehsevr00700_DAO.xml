@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.comet.service.eh.ehsevr.dao.Ehsevr00700_DAO">
+
+	<select id="selectList" parameterType="hashmap" resultType="com.douzone.comet.service.eh.ehsevr.models.Ehsevr00700">
+		  SELECT EWM.COMPANY_CD 
+		        ,EWM.PLANT_CD 
+		        ,MPM.PLANT_NM
+		        ,EWM.MESR_CLAS_CD 
+		        ,EWM.PLANT_CD ORG_PLANT_CD
+                ,EWM.MESR_CLAS_CD ORG_MESR_CLAS_CD
+		        ,EWM.MESR_CLAS_NM 
+		        ,EWM.BASE_UNIT_CD 
+		        ,EWM.SQ_NO 
+		        ,EWM.RMK_DC 
+		    FROM @{dzparam_dbname} EH_WQAUTOMP_MST EWM
+		    LEFT OUTER JOIN @{dzparam_dbname}MA_PLANT_MST MPM ON MPM.COMPANY_CD = EWM.COMPANY_CD
+                                             AND MPM.PLANT_CD   = EWM.PLANT_CD 
+            WHERE 1 = 1
+		<if test='P_PLANT_CD != null and !"".equals(P_PLANT_CD)'>
+			AND EWM.PLANT_CD = #{P_PLANT_CD}
+		</if>
+		<if test='P_KEYWORD != null and P_KEYWORD != ""'>
+		    AND (  UPPER(EWM.MESR_CLAS_NM) 	LIKE '%'||UPPER(#{P_KEYWORD})||'%' 
+			OR UPPER(EWM.MESR_CLAS_NM) 	LIKE '%'||UPPER(#{P_KEYWORD})||'%'
+			)
+		</if>		
+		    ORDER BY EWM.PLANT_CD, EWM.MESR_CLAS_CD, EWM.SQ_NO 
+	</select>
+
+
+	<insert id="insertEhsevr00700">		
+		INSERT INTO @{dzparam_dbname}EH_WQAUTOMP_MST (
+				COMPANY_CD,
+				PLANT_CD,
+				MESR_CLAS_CD,
+				MESR_CLAS_NM,
+				BASE_UNIT_CD,
+				SQ_NO,
+				RMK_DC,
+				INSERT_ID,
+				INSERT_IP,
+				INSERT_MCADDR_NM,
+				INSERT_DTS,
+				UPDATE_ID,
+				UPDATE_IP,
+				UPDATE_MCADDR_NM,
+				UPDATE_DTS
+		) VALUES (
+				#{company_cd},
+				#{plant_cd},
+				#{mesr_clas_cd},
+				#{mesr_clas_nm},
+				#{base_unit_cd},
+				#{sq_no},
+				#{rmk_dc},
+				#{insert_id},
+                #{insert_ip},
+                #{insert_mcaddr_nm},
+                SYSDATE,
+                #{update_id},
+                #{update_ip},
+                #{update_mcaddr_nm},
+                SYSDATE     
+		)		
+	</insert>
+
+	<update id="updateEhsevr00700">		
+		UPDATE	@{dzparam_dbname}EH_WQAUTOMP_MST
+		SET		PLANT_CD     = #{plant_cd},
+		        MESR_CLAS_CD = #{mesr_clas_cd},
+		        MESR_CLAS_NM = #{mesr_clas_nm},
+				BASE_UNIT_CD = #{base_unit_cd},
+				SQ_NO		 = #{sq_no},
+				RMK_DC 	     = #{rmk_dc},
+				UPDATE_ID    = #{update_id},
+                UPDATE_IP    = #{update_ip},
+                UPDATE_MCADDR_NM = #{update_mcaddr_nm},
+                UPDATE_DTS  = SYSDATE
+		WHERE COMPANY_CD   = #{company_cd}
+        AND   PLANT_CD     = #{org_plant_cd} -- 공장코드
+        AND   MESR_CLAS_CD = #{org_mesr_clas_cd} -- 측정항목코드
+	</update>
+				
+	<delete id="deleteEhsevr00700">
+		DELETE
+		FROM	@{dzparam_dbname}EH_WQAUTOMP_MST
+		WHERE	COMPANY_CD   = #{company_cd}
+		AND		PLANT_CD	 = #{org_plant_cd} -- 공장코드
+		AND		MESR_CLAS_CD = #{org_mesr_clas_cd} -- 측정항목코드
+	</delete>
+	
+	<select id="selectDropdownList" parameterType="hashmap" resultType="com.douzone.comet.service.eh.ehsevr.models.Ehsevr00700_Dropdown">
+        SELECT ECD.MNG_DTL_CD SYSDEF_CD 
+		      ,ECD.MNG_DTL_NM SYSDEF_NM
+		FROM @{dzparam_dbname}EH_CODE_DTL ECD
+		WHERE ECD.COMPANY_CD = #{P_COMPANY_CD}
+		AND ECD.MCLS_CD = #{P_MCLS_CD}
+        ORDER BY ECD.MNG_DTL_CD
+    </select>
+
+</mapper>
