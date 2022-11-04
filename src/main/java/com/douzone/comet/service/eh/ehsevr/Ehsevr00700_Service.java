@@ -21,6 +21,12 @@ import com.douzone.gpd.restful.enums.DzParamType;
 import com.douzone.gpd.restful.enums.DzRequestMethod;
 import com.douzone.gpd.restful.model.DzGridModel;
 
+/** 
+ * @description : 자동측정항목등록
+ * @Since   : 2022.11.02
+ * @Author  : 강아름
+ */
+
 @DzApiService(value = "Ehsevr00700_Service", module = CometModule.EH, desc = "자동측정항목등록", version ="1.0.22110201")
 public class Ehsevr00700_Service extends DzCometService {
 	@Autowired

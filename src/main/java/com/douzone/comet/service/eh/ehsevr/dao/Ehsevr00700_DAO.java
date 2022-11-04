@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import com.douzone.comet.jdbc.mybatis.DzMybatisSupport;
 import com.douzone.comet.service.eh.ehsevr.models.Ehsevr00700;
 import com.douzone.comet.service.eh.ehsevr.models.Ehsevr00700_Dropdown;
-import com.douzone.comet.service.eh.ehsevr.models.Ehsevr00700;
 import com.douzone.comet.service.util.mybatis.MyBatisUtil;
 
 @Repository
