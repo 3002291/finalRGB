@@ -27,12 +27,12 @@ import com.douzone.gpd.restful.model.DzGridModel;
  * @Author  : 강아름
  */
 
-@DzApiService(value = "Ehsevr00800_Service", module = CometModule.EH, desc = "자동측정항목등록", version ="1.0.22110401")
+@DzApiService(value = "Ehsevr00800_Service", module = CometModule.EH, desc = "약품원료등록", version ="1.0.22110401")
 public class Ehsevr00800_Service extends DzCometService {
 	@Autowired
 	Ehsevr00800_DAO ehsevr00800_DAO;
 	
-	@DzApi(url = "/ehsevr00800_list", desc = "자동측정항목등록 그리드 조회", httpMethod = DzRequestMethod.GET)
+	@DzApi(url = "/ehsevr00800_list", desc = "약품원료등록 그리드 조회", httpMethod = DzRequestMethod.GET)
 	public List<Ehsevr00800> ehsevr00800_list(
 			@DzParam(key="company_cd", desc="회사코드", paramType=DzParamType.QueryString) String company_cd,
 			@DzParam(key="plant_cd", desc="사업장", paramType=DzParamType.QueryString) String plant_cd,
@@ -54,7 +54,7 @@ public class Ehsevr00800_Service extends DzCometService {
 		return items;
 	}
 	
-	@DzApi(url = "/ehsevr00800_dropdown", desc = "자동측정항목등록 드롭다운 조회", httpMethod = DzRequestMethod.GET)
+	@DzApi(url = "/ehsevr00800_dropdown", desc = "약품원료등록 드롭다운 조회", httpMethod = DzRequestMethod.GET)
 	public List<Ehsevr00800_Dropdown> ehsevr00800_list(
 			@DzParam(key="company_cd", desc="사업장", paramType=DzParamType.QueryString) String company_cd,
 			@DzParam(key="mcls_cd", desc="관리항목코드", paramType=DzParamType.QueryString) String mcls_cd
@@ -74,9 +74,9 @@ public class Ehsevr00800_Service extends DzCometService {
 		return items;
 	}
 	
-	@DzApi(url = "/ehsevr00800_save", desc = "자동측정항목등록 저장", httpMethod = DzRequestMethod.POST)
+	@DzApi(url = "/ehsevr00800_save", desc = "약품원료등록 저장", httpMethod = DzRequestMethod.POST)
 	public void ehsevr00800_save(
-			@DzParam(key = "ds_list", desc = "자동측정항목등록", paramType = DzParamType.Body) DzGridModel<Ehsevr00800> ds_list
+			@DzParam(key = "ds_list", desc = "약품원료등록", paramType = DzParamType.Body) DzGridModel<Ehsevr00800> ds_list
 			) throws Exception{
 		DzGridModel<Ehsevr00800> ds_listTemp = ds_list;
 		DbTransaction<?> trans = null;

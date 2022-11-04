@@ -5,7 +5,7 @@ import com.douzone.gpd.restful.annotation.DzModel;
 import com.douzone.gpd.restful.annotation.DzModelField;
 import com.google.gson.annotations.SerializedName;
  
-@DzModel(name = "Ehsevr00700_Dropdown", desc = "Ehsevr00700 드롭다운", tableName = "")
+@DzModel(name = "Ehsevr00800_Dropdown", desc = "Ehsevr00800 드롭다운", tableName = "")
 public class Ehsevr00800_Dropdown extends DzAbstractModel {
 
 	@SerializedName("SYSDEF_CD")
