@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.comet.service.eh.ehsevr.dao.Ehsevr00800_DAO">
+
+	<select id="selectList" parameterType="hashmap" resultType="com.douzone.comet.service.eh.ehsevr.models.Ehsevr00800">
+		  SELECT ECM.COMPANY_CD 
+		        ,ECM.PLANT_CD ORG_PLANT_CD
+		        ,ECM.PLANT_CD 
+		        ,MPM.PLANT_NM
+		        ,ECM.ENV_TSK_FG_CD ORG_ENV_TSK_FG_CD
+		        ,ECM.ENV_TSK_FG_CD 
+		        ,ECM.ENV_TSK_FG_NM 
+		        ,ECM.FG_CD ORG_FG_CD
+		        ,ECM.FG_CD 
+		        ,ECM.FG_NM 
+		        ,ECM.CMCL_CD ORG_CMCL_CD
+		        ,ECM.CMCL_CD 
+		        ,ECM.CMCL_NM 
+		        ,ECM.BASE_UNIT_CD 
+		        ,ECM.SQ_NO
+		        ,ECM.RMK_DC
+		  FROM @{dzparam_dbname}EH_CMCL_MST ECM
+		  LEFT OUTER JOIN @{dzparam_dbname}MA_PLANT_MST MPM ON MPM.COMPANY_CD = ECM.COMPANY_CD
+                                             AND MPM.PLANT_CD   = ECM.PLANT_CD 
+          WHERE 1 = 1
+		<if test='P_PLANT_CD != null and !"".equals(P_PLANT_CD)'>
+			AND ECM.PLANT_CD = #{P_PLANT_CD}
+		</if>
+		<if test='P_KEYWORD != null and P_KEYWORD != ""'>
+		    AND (  UPPER(ECM.CMCL_NM) 	LIKE '%'||UPPER(#{P_KEYWORD})||'%' 
+			OR UPPER(ECM.CMCL_NM) 	LIKE '%'||UPPER(#{P_KEYWORD})||'%'
+			)
+		</if>		
+		    ORDER BY ECM.PLANT_CD, ECM.ENV_TSK_FG_CD, ECM.FG_CD, ECM.SQ_NO
+	</select>
+
+
+	<insert id="insertEhsevr00800">		
+		INSERT INTO @{dzparam_dbname}EH_CMCL_MST (
+				COMPANY_CD,
+				PLANT_CD,
+				ENV_TSK_FG_CD,
+				ENV_TSK_FG_NM,
+				FG_CD,
+				FG_NM,
+				CMCL_CD,
+				CMCL_NM,
+				BASE_UNIT_CD,
+				SQ_NO,
+				RMK_DC,
+				INSERT_ID,
+				INSERT_IP,
+				INSERT_MCADDR_NM,
+				INSERT_DTS,
+				UPDATE_ID,
+				UPDATE_IP,
+				UPDATE_MCADDR_NM,
+				UPDATE_DTS
+		) VALUES (
+				#{company_cd},
+				#{plant_cd},
+				#{env_tsk_fg_cd},
+				#{env_tsk_fg_nm},
+				#{fg_cd},
+				#{fg_nm},
+				#{cmcl_cd},
+				#{cmcl_nm},
+				#{base_unit_cd},
+				#{sq_no},
+				#{rmk_dc},
+				#{insert_id},
+                #{insert_ip},
+                #{insert_mcaddr_nm},
+                SYSDATE,
+                #{update_id},
+                #{update_ip},
+                #{update_mcaddr_nm},
+                SYSDATE     
+		)		
+	</insert>
+
+	<update id="updateEhsevr00800">		
+		UPDATE	@{dzparam_dbname}EH_CMCL_MST
+		SET		PLANT_CD      = #{plant_cd},
+		        ENV_TSK_FG_CD = #{env_tsk_fg_cd},
+		        ENV_TSK_FG_NM = #{env_tsk_fg_nm},
+				FG_CD         = #{fg_cd},
+				FG_NM		  = #{fg_nm},
+				CMCL_CD	      = #{cmcl_cd},
+				CMCL_NM		  = #{cmcl_nm},
+				BASE_UNIT_CD  = #{base_unit_cd},
+				SQ_NO		  = #{sq_no},
+				RMK_DC 	      = #{rmk_dc},
+				UPDATE_ID     = #{update_id},
+                UPDATE_IP     = #{update_ip},
+                UPDATE_MCADDR_NM = #{update_mcaddr_nm},
+                UPDATE_DTS    = SYSDATE
+		WHERE COMPANY_CD    = #{company_cd}
+        AND   PLANT_CD      = #{org_plant_cd} -- 공장코드
+        AND   ENV_TSK_FG_CD = #{org_env_tsk_fg_cd} -- 환경업무구분코드
+        AND   FG_CD         = #{org_fg_cd} -- 구분코드
+        AND   CMCL_CD       = #{org_cmcl_cd} -- 화학약품코드
+	</update>
+				
+	<delete id="deleteEhsevr00800">
+		DELETE
+		FROM	@{dzparam_dbname}EH_CMCL_MST
+        WHERE COMPANY_CD    = #{company_cd}
+        AND   PLANT_CD      = #{org_plant_cd} -- 공장코드
+        AND   ENV_TSK_FG_CD = #{org_env_tsk_fg_cd} -- 환경업무구분코드
+        AND   FG_CD         = #{org_fg_cd} -- 구분코드
+        AND   CMCL_CD       = #{org_cmcl_cd} -- 화학약품코드
+	</delete>
+	
+	<select id="selectDropdownList" parameterType="hashmap" resultType="com.douzone.comet.service.eh.ehsevr.models.Ehsevr00800_Dropdown">
+        SELECT ECD.MNG_DTL_CD SYSDEF_CD 
+		      ,ECD.MNG_DTL_NM SYSDEF_NM
+		FROM @{dzparam_dbname}EH_CODE_DTL ECD
+		WHERE ECD.COMPANY_CD = #{P_COMPANY_CD}
+		AND ECD.MCLS_CD = #{P_MCLS_CD}
+        ORDER BY ECD.MNG_DTL_CD
+    </select>
+
+</mapper>
