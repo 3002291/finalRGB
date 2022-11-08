@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.comet.service.eh.ehsevr.dao.Ehsevr00400_DAO">
+
+	<select id="selectList" resultType="com.douzone.comet.service.eh.ehsevr.models.Ehsevr00400">				
+		  SELECT	A.COMPANY_CD,
+					A.PLANT_CD,
+					B.PLANT_NM, 
+					A.WTWT_DSCHFCLT_CD,
+					A.WTWT_DSCHFCLT_NM,
+					A.SQ_NO,RMK_DC,
+					A.INSERT_ID,
+					A.INSERT_IP,
+					A.INSERT_MCADDR_NM,
+					A.INSERT_DTS,
+					A.UPDATE_ID,
+					A.UPDATE_IP,
+					A.UPDATE_MCADDR_NM,
+					A.UPDATE_DTS
+					
+			FROM	@{dzparam_dbname}EH_WWTREAT_MST A
+			
+			LEFT OUTER JOIN @{dzparam_dbname}MA_PLANT_MST B
+						 ON A.COMPANY_CD	= 	B.COMPANY_CD 
+				        AND A.PLANT_CD 		= 	B.PLANT_CD
+				        
+		   WHERE  	(A.PLANT_CD = #{P_PLANT_CD} OR COALESCE(#{P_PLANT_CD}, ' ') = ' ') 
+		     AND 	UPPER(A.WTWT_DSCHFCLT_NM) LIKE UPPER(CONCAT('%',CONCAT(#{P_WTWT_DSCHFCLT_NM},'%'))) 
+		     AND    A.COMPANY_CD = #{P_COMPANY_CD}	
+		   ORDER BY	A.COMPANY_CD, A.PLANT_CD, A.WTWT_DSCHFCLT_CD	
+	</select>
+	
+	<select id="ddl" resultType="com.douzone.comet.service.eh.ehsevr.models.Ehsevr00400">
+		SELECT	MNG_DTL_CD WTWT_DSCHFCLT_CD, MNG_DTL_NM WTWT_DSCHFCLT_NM
+		
+		  FROM	@{dzparam_dbname}EH_CODE_DTL
+		  
+		 WHERE  COMPANY_CD = #{P_COMPANY_CD}
+		   AND  MCLS_CD = 'E0300'
+		 ORDER  BY MNG_DTL_CD 
+	</select>
+	
+	<select id="mstDupCheck" resultType="Integer">
+		SELECT COUNT(*)
+		
+          FROM @{dzparam_dbname}EH_WWTREAT_MST
+           
+         WHERE COMPANY_CD = #{company_cd}
+           AND PLANT_CD = #{plant_cd}
+           AND WTWT_DSCHFCLT_CD = #{wtwt_dschfclt_cd}
+           AND SQ_NO = #{sq_no}
+	</select>
+	
+	<delete id="deleteEhsevr00400">
+		DELETE 
+		  FROM @{dzparam_dbname}EH_WWTREAT_MST
+		  
+		 WHERE COMPANY_CD = #{company_cd}
+		 
+ 	       AND PLANT_CD = #{plant_cd}
+ 	       AND WTWT_DSCHFCLT_CD = #{wtwt_dschfclt_cd}
+ 	       AND SQ_NO = #{sq_no} 
+	</delete>
+	
+	<update id="updateEhsevr00400">
+		UPDATE @{dzparam_dbname}EH_WWTREAT_MST
+		
+	 	   SET RMK_DC = #{rmk_dc}
+	 	   
+	 	 WHERE COMPANY_CD = #{company_cd}
+	 	   AND PLANT_CD = #{plant_cd}
+	 	   AND WTWT_DSCHFCLT_CD = #{wtwt_dschfclt_cd}
+	 	   AND SQ_NO = #{sq_no} 
+	</update>
+	
+	<insert id="insertEhsevr00400">
+		INSERT INTO @{dzparam_dbname}EH_WWTREAT_MST
+	   (
+	   	COMPANY_CD,		PLANT_CD,	    WTWT_DSCHFCLT_CD,	  WTWT_DSCHFCLT_NM,	SQ_NO,	RMK_DC,
+	   	INSERT_ID,		INSERT_IP,	    INSERT_MCADDR_NM,	  INSERT_DTS,
+	   	UPDATE_ID,		UPDATE_IP,	    UPDATE_MCADDR_NM,	  UPDATE_DTS
+	   	
+	   )SELECT 	#{company_cd},  #{plant_cd},    #{wtwt_dschfclt_cd},  A.MNG_DTL_NM, 	#{sq_no}, #{rmk_dc},
+			    #{P_INSERT_ID},	#{P_INSERT_IP},	#{P_INSERT_MCADDR_NM},  SYSDATE,
+			    #{P_UPDATE_ID},	#{P_UPDATE_IP},	#{P_UPDATE_MCADDR_NM},  SYSDATE
+			    
+	     FROM 	@{dzparam_dbname}EH_CODE_DTL A
+ 		WHERE   A.COMPANY_CD = #{company_cd}
+ 		  AND 	A.MCLS_CD	  = 'E0300' -- 고정값
+ 		  AND 	A.MNG_DTL_CD = #{wtwt_dschfclt_cd}
+	</insert> 
+</mapper>
