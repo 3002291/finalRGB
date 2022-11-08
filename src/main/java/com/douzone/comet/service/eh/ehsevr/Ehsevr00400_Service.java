@@ -28,7 +28,7 @@ import com.douzone.gpd.restful.model.DzGridModel;
   * @Author  : 이태훈
   * @History :
   */
-@DzApiService(value="Ehsevr00400_Service", module=CometModule.EH, desc="기준정보관리 - 환경기준정보")
+@DzApiService(value="Ehsevr00400_Service", module=CometModule.EH, desc="기준정보관리 - 환경기준정보", version ="1.0.22110801")
 public class Ehsevr00400_Service extends DzCometService {
 
 	@Autowired
