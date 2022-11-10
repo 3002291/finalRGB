@@ -24,7 +24,7 @@
 			AND A.PLANT_CD = #{P_PLANT_CD}
 		</if>
 		<if test='P_WHM_NM != null and P_WHM_NM != ""'>
-		AND (  UPPER(A.P_WHM_NM) 	LIKE '%'||#{P_WHM_NM}||'%' )
+		AND (  UPPER(A.WHM_NM) 	LIKE '%'||#{P_WHM_NM}||'%' )
 		</if>
 	</select>
 	
