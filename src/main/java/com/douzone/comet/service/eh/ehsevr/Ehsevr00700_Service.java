@@ -27,7 +27,7 @@ import com.douzone.gpd.restful.model.DzGridModel;
  * @Author  : 강아름
  */
 
-@DzApiService(value = "Ehsevr00700_Service", module = CometModule.EH, desc = "자동측정항목등록", version ="1.0.22110201")
+@DzApiService(value = "Ehsevr00700_Service", module = CometModule.EH, desc = "자동측정항목등록", version ="1.0.22111001")
 public class Ehsevr00700_Service extends DzCometService {
 	@Autowired
 	Ehsevr00700_DAO ehsevr00700_DAO;
@@ -89,15 +89,6 @@ public class Ehsevr00700_Service extends DzCometService {
 						ehsevr00700_DAO.deleteEhsevr00700(item);
 					}
 				}
-				if (ds_listTemp.getAdded().size() > 0) {
-					for (Ehsevr00700 item : ds_listTemp.getAdded()) {
-						item.setInsert_id(this.getUserId());
-						item.setInsert_ip(this.getRemoteHost());
-						error_point = item.getPlant_cd() + "|" + item.getMesr_clas_cd();
-						
-						ehsevr00700_DAO.insertEhsevr00700(item);
-					}
-				}
 				if (ds_listTemp.getUpdated().size() > 0) {
 					for (Ehsevr00700 item : ds_listTemp.getUpdated()) {
 						item.setUpdate_id(this.getUserId());
@@ -105,6 +96,15 @@ public class Ehsevr00700_Service extends DzCometService {
 						error_point = item.getPlant_cd() + "|" + item.getMesr_clas_cd();
 
 						ehsevr00700_DAO.updateEhsevr00700(item);
+					}
+				}
+				if (ds_listTemp.getAdded().size() > 0) {
+					for (Ehsevr00700 item : ds_listTemp.getAdded()) {
+						item.setInsert_id(this.getUserId());
+						item.setInsert_ip(this.getRemoteHost());
+						error_point = item.getPlant_cd() + "|" + item.getMesr_clas_cd();
+						
+						ehsevr00700_DAO.insertEhsevr00700(item);
 					}
 				}
 			}

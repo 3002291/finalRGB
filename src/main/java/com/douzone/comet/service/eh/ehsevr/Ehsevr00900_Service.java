@@ -22,7 +22,7 @@ import com.douzone.gpd.restful.enums.DzParamType;
 import com.douzone.gpd.restful.enums.DzRequestMethod;
 import com.douzone.gpd.restful.model.DzGridModel;
 
-@DzApiService(value = "Ehsevr00900_Service", module = CometModule.EH, desc = "폭기조구분등록", version ="1.0.22102601")
+@DzApiService(value = "Ehsevr00900_Service", module = CometModule.EH, desc = "폭기조구분등록", version ="1.0.22111001")
 public class Ehsevr00900_Service extends DzCometService {
 	@Autowired
 	Ehsevr00900_DAO ehsevr00900_DAO;
@@ -67,16 +67,6 @@ public class Ehsevr00900_Service extends DzCometService {
 						ehsevr00900_DAO.deleteEhsevr00900(item);
 					}
 				}
-				if (ds_listTemp.getAdded().size() > 0) {
-					for (Ehsevr00900 item : ds_listTemp.getAdded()) {
-						item.setCompany_cd(this.getCompanyCode());
-						item.setInsert_id(this.getUserId());
-						item.setInsert_ip(this.getRemoteHost());
-//						item.setSale_dt(StringUtil.getLocaleTimeString(item.getSale_dt(), "yyyyMMdd"));
-						
-						ehsevr00900_DAO.insertEhsevr00900(item);
-					}
-				}
 				if (ds_listTemp.getUpdated().size() > 0) {
 					for (Ehsevr00900 item : ds_listTemp.getUpdated()) {
 						item.setCompany_cd(this.getCompanyCode());
@@ -85,6 +75,16 @@ public class Ehsevr00900_Service extends DzCometService {
 //						item.setSale_dt(StringUtil.getLocaleTimeString(item.getSale_dt(), "yyyyMMdd"));
 
 						ehsevr00900_DAO.updateEhsevr00900(item);
+					}
+				}
+				if (ds_listTemp.getAdded().size() > 0) {
+					for (Ehsevr00900 item : ds_listTemp.getAdded()) {
+						item.setCompany_cd(this.getCompanyCode());
+						item.setInsert_id(this.getUserId());
+						item.setInsert_ip(this.getRemoteHost());
+//						item.setSale_dt(StringUtil.getLocaleTimeString(item.getSale_dt(), "yyyyMMdd"));
+						
+						ehsevr00900_DAO.insertEhsevr00900(item);
 					}
 				}
 			}

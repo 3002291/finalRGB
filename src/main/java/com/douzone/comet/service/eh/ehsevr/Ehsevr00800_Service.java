@@ -27,7 +27,7 @@ import com.douzone.gpd.restful.model.DzGridModel;
  * @Author  : 강아름
  */
 
-@DzApiService(value = "Ehsevr00800_Service", module = CometModule.EH, desc = "약품원료등록", version ="1.0.22110401")
+@DzApiService(value = "Ehsevr00800_Service", module = CometModule.EH, desc = "약품원료등록", version ="1.0.22111001")
 public class Ehsevr00800_Service extends DzCometService {
 	@Autowired
 	Ehsevr00800_DAO ehsevr00800_DAO;
@@ -90,15 +90,6 @@ public class Ehsevr00800_Service extends DzCometService {
 						ehsevr00800_DAO.deleteEhsevr00800(item);
 					}
 				}
-				if (ds_listTemp.getAdded().size() > 0) {
-					for (Ehsevr00800 item : ds_listTemp.getAdded()) {
-						item.setInsert_id(this.getUserId());
-						item.setInsert_ip(this.getRemoteHost());
-						error_point = item.getPlant_cd() + "|" + item.getEnv_tsk_fg_cd() + "|" + item.getFg_cd() + "|" + item.getCmcl_cd();
-						
-						ehsevr00800_DAO.insertEhsevr00800(item);
-					}
-				}
 				if (ds_listTemp.getUpdated().size() > 0) {
 					for (Ehsevr00800 item : ds_listTemp.getUpdated()) {
 						item.setUpdate_id(this.getUserId());
@@ -106,6 +97,15 @@ public class Ehsevr00800_Service extends DzCometService {
 						error_point = item.getPlant_cd() + "|" + item.getEnv_tsk_fg_cd() + "|" + item.getFg_cd() + "|" + item.getCmcl_cd();
 
 						ehsevr00800_DAO.updateEhsevr00800(item);
+					}
+				}
+				if (ds_listTemp.getAdded().size() > 0) {
+					for (Ehsevr00800 item : ds_listTemp.getAdded()) {
+						item.setInsert_id(this.getUserId());
+						item.setInsert_ip(this.getRemoteHost());
+						error_point = item.getPlant_cd() + "|" + item.getEnv_tsk_fg_cd() + "|" + item.getFg_cd() + "|" + item.getCmcl_cd();
+						
+						ehsevr00800_DAO.insertEhsevr00800(item);
 					}
 				}
 			}
