@@ -33,7 +33,7 @@ public class Ehsevr00200_DAO  {
 		this.mybatisSupport.delete(this.getClass().getName() + ".deleteEhsevr00200", Ehsevr00200_temp);
 	}
 	public void deleteEhsevr00200(List<Ehsevr00200> Ehsevr00200_temp) throws Exception {
-		this.mybatisSupport.updateBatch(this.getClass().getName() + ".deleteEhsevr00200", Ehsevr00200_temp);
+		this.mybatisSupport.deleteBatch(this.getClass().getName() + ".deleteEhsevr00200", Ehsevr00200_temp);
 	}
 	
 	public void updateEhsevr00200(Ehsevr00200 Ehsevr00200_temp) throws Exception {
