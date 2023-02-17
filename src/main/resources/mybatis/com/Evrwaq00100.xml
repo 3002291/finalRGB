@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.douzone.comet.service.eh.evrwaq.Evrwaq00100_DAO">
+	
+	<select id="MASTERlist" parameterType="hashmap" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_MASTER">
+		SELECT A.COMPANY_CD, A.DOC_NO, A.PLANT_CD, B.PLANT_NM, A.OPER_DRPT_INSERT_DT, A.ATHZ_ST_CD, A.WTHR_FG, A.DRV_TMPT
+		FROM @{dzparam_dbname}EH_WWPRVNOPER_MST A
+		LEFT OUTER JOIN @{dzparam_dbname}MA_PLANT_MST B
+		ON A.COMPANY_CD = B.COMPANY_CD
+		AND A.PLANT_CD = B.PLANT_CD
+		WHERE A.COMPANY_CD = #{P_COMPANY_CD}
+		AND A.PLANT_CD = #{P_PLANT_CD}
+		AND A.OPER_DRPT_INSERT_DT BETWEEN #{P_OPER_DRPT_INSERT_START_DT} AND #{P_OPER_DRPT_INSERT_END_DT}
+		AND (A.ATHZ_ST_CD = #{P_ATHZ_ST_CD} OR COALESCE(#{P_ATHZ_ST_CD}, ' ') = ' ')
+		ORDER BY A.OPER_DRPT_INSERT_DT
+	</select>
+	
+	<select id="Droplist" parameterType="hashmap" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_Drop">
+		SELECT MNG_DTL_CD, MNG_DTL_NM
+		FROM @{dzparam_dbname}EH_CODE_DTL
+		WHERE COMPANY_CD = #{P_COMPANY_CD}
+		AND MCLS_CD = 'E1300'
+	</select>
+	
+	<!-- 조회 - 배출시설 그리드 -->
+	<select id="DSClist" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_DSC">
+		<!-- EH_WDSCHFCLT_MST, EH_DSCHFCLTOPR_INFO 테이블로 조회 (배출시설팝업 개발 후) -->
+		SELECT 
+			B.COMPANY_CD 														
+			, B.PLANT_CD 														
+			, B.DOC_NO 															
+			, B.DSCHFCLT_CD 													
+			, B.DSCHFCLT_NM 													
+			, B.START_TM														
+			, B.END_TM															
+			<!-- , TO_CHAR(TO_NUMBER(A.END_TM)-TO_NUMBER(A.START_TM)) AS OPRN_TM --> <!-- 가동시간 -->
+	   		, B.OPRN_TM															
+	   		, B.OPRN_ST															
+			, B.SPECAIL_DC 														
+		FROM EH_DSCHFCLTOPR_INFO B
+		LEFT OUTER JOIN EH_WDSCHFCLT_MST A
+		ON 		A.COMPANY_CD  	= B.COMPANY_CD 
+		AND 	A.PLANT_CD 		= B.PLANT_CD 
+		AND   	A.DSCHFCLT_CD 	= B.DSCHFCLT_CD 
+		WHERE 	B.COMPANY_CD  	= #{P_COMPANY_CD}
+		AND   	B.PLANT_CD 		= #{P_PLANT_CD}
+		AND   	B.DOC_NO		= #{P_DOC_NO}
+	</select>
+	
+		<!-- 조회 - 방지시설 그리드 -->
+	<select id="PRVlist" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_PRV">
+		<!-- EH_WPRVNFCLT_MST, EH_PRVNFCLOPRN_INFO 테이블로 조회 (방지시설팝업 개발 후) -->
+		SELECT 
+			B.COMPANY_CD 													
+			, B.PLANT_CD 													
+			, B.DOC_NO 														
+			, B.PRVNFCLT_CD 												
+			, B.PRVNFCLT_NM 												
+			, B.START_TM													
+			, B.END_TM														
+			, B.OPRN_TM														
+			, B.NSHIFT_BWRK_MAN_NM 											
+			, B.DSHIFT_BWRK_MAN_NM 											
+			, B.ASHIFT_BWRK_MAN_NM 											
+			, B.RMK_DC 														
+		FROM @{dzparam_dbname}EH_PRVNFCLOPRN_INFO B
+		LEFT OUTER JOIN @{dzparam_dbname}EH_WPRVNFCLT_MST A
+		ON 		A.COMPANY_CD  	= B.COMPANY_CD 
+		AND 	A.PLANT_CD 		= B.PLANT_CD 
+		AND   	A.PRVNFCLT_CD 	= B.PRVNFCLT_CD 
+		WHERE	A.COMPANY_CD  	= #{P_COMPANY_CD}
+		AND  	B.PLANT_CD 		= #{P_PLANT_CD}
+		AND   	B.DOC_NO 		= #{P_DOC_NO}
+		AND		A.ENV_TSK_FG_CD = '1201'		
+	</select>	
+	
+	<select id="doccheck" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM @{dzparam_dbname}EH_WWPRVNOPER_MST
+		WHERE DOC_NO = #{P_DOC_NO}
+	</select>
+	
+	<select id="existDSC" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM @{dzparam_dbname}EH_DSCHFCLTOPR_INFO
+		WHERE COMPANY_CD = #{P_COMPANY_CD}
+		AND PLANT_CD = #{P_PLANT_CD}
+		AND DOC_NO = #{P_DOC_NO}
+	</select>
+	<select id="existPRV" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM @{dzparam_dbname}EH_PRVNFCLOPRN_INFO
+		WHERE COMPANY_CD = #{P_COMPANY_CD}
+		AND PLANT_CD = #{P_PLANT_CD}
+		AND DOC_NO = #{P_DOC_NO}
+	</select>
+	
+	<insert id="MSTinsert" parameterType="hashmap">
+		INSERT INTO @{dzparam_dbname}EH_WWPRVNOPER_MST
+		(COMPANY_CD, PLANT_CD, DOC_NO, OPER_DRPT_INSERT_DT, WTHR_FG, DRV_TMPT,
+			EQP_CD, EQP_NM, WRTR_ID, ATHZ_ST_CD, INSERT_ID, INSERT_IP, INSERT_MCADDR_NM, INSERT_DTS)
+		VALUES
+		(#{P_COMPANY_CD}, #{P_PLANT_CD}, #{P_DOC_NO}, #{P_OPER_DRPT_INSERT_DT}, #{P_WTHR_FG}, #{P_DRV_TMPT},
+			#{P_EQP_CD}, #{P_EQP_NM}, #{P_WRTR_ID}, #{ATHZ_ST_CD}, #{P_INSERT_ID}, #{P_INSERT_IP}, #{P_INSERT_MCADDR_NM}, FN_TODATE(#{P_CM_SYSDATE}))
+	</insert>
+	
+	<update id="MSTupdate" parameterType="hashmap">
+		UPDATE @{dzparam_dbname}EH_WWPRVNOPER_MST
+		SET
+			WTHR_FG = #{P_WTHR_FG},
+			DRV_TMPT = #{P_DRV_TMPT},
+			UPDATE_ID = #{P_UPDATE_ID},
+			UPDATE_IP = #{P_UPDATE_IP},
+			UPDATE_MCADDR_NM = #{P_UPDATE_MCADDR_NM},
+			UPDATE_DTS = FN_TODATE(#{P_CM_SYSDATE})
+		WHERE COMPANY_CD = #{P_COMPANY_CD}
+		AND PLANT_CD = #{P_PLANT_CD}
+		AND DOC_NO = #{P_DOC_NO}
+		AND OPER_DRPT_INSERT_DT = #{P_OPER_DRPT_INSERT_DT}
+	</update>
+	
+	<delete id="MSTdelete" parameterType="hashmap">
+		DELETE
+		FROM @{dzparam_dbname}EH_WWPRVNOPER_MST
+		WHERE COMPANY_CD = #{P_COMPANY_CD}
+		AND PLANT_CD = #{P_PLANT_CD}
+		AND DOC_NO = #{P_DOC_NO}
+		AND OPER_DRPT_INSERT_DT = #{P_OPER_DRPT_INSERT_DT}
+	</delete>
+	
+		<!-- 배출시설코드 중복체크 -->
+	<select id="DSCdupcheck" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_DSC">
+		SELECT A.DSCHFCLT_CD
+		FROM @{dzparam_dbname}EH_DSCHFCLTOPR_INFO A
+		WHERE	A.COMPANY_CD  = #{company_cd}
+		AND		A.PLANT_CD 	= #{P_PLANT_CD}
+		AND		A.DOC_NO = #{doc_no}
+		AND		A.DSCHFCLT_CD = #{dschfclt_cd}
+	</select>
+	
+		<!-- 삽입 - 배출시설 그리드 -->
+	<insert id="DSCinsert" parameterType="hashmap">
+		INSERT INTO @{dzparam_dbname}EH_DSCHFCLTOPR_INFO (
+				COMPANY_CD 				<!-- [HID] 회사코드 -->
+				,PLANT_CD				<!-- [HID] 공장코드 -->
+				,DOC_NO					<!-- [HID] 문서번호 -->
+				,DSCHFCLT_CD			<!-- 배출시설코드 -->
+				,DSCHFCLT_NM			<!-- 배출시설명 -->
+				,START_TM				<!-- 시작시간 -->
+				,END_TM					<!-- 종료시간 -->
+				,OPRN_TM				<!-- 가동시간 -->
+				,OPRN_ST				<!-- 가동상태 -->
+				,SPECAIL_DC				<!-- 특이사항내역 -->
+				,INSERT_ID				<!-- [HID] INSERT ID -->
+				,INSERT_IP				<!-- [HID] INSERT IP -->
+				,INSERT_MCADDR_NM		<!-- [HID] INSERT 맥 어드레스 명 -->
+				,INSERT_DTS				<!-- [HID] INSERT 시간 -->
+		) VALUES (
+				#{company_cd}
+				, #{P_PLANT_CD}
+				, #{doc_no}
+				, #{dschfclt_cd}
+				, #{dschfclt_nm}
+				, #{start_tm}
+				, #{end_tm}
+				, #{oprn_tm}
+				, #{oprn_st}
+				, #{specail_dc}
+				, #{P_INSERT_ID}
+				, #{P_INSERT_IP}
+				, #{P_INSERT_MCADDR_NM}
+				, FN_TODATE(#{P_CM_SYSDATE}) 
+		)
+	</insert>
+	
+	<!-- 배출시설그리드 수정 - 체크 -->
+		<select id="DSCupdatecheck" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_DSC">
+		SELECT COMPANY_CD 
+				, PLANT_CD  
+				, DOC_NO
+				, DSCHFCLT_CD
+		FROM @{dzparam_dbname}EH_DSCHFCLTOPR_INFO
+		WHERE COMPANY_CD = #{P_COMPANY_CD}
+		AND PLANT_CD = #{P_PLANT_CD}
+		AND DOC_NO = #{P_DOC_NO}
+		AND DSCHFCLT_CD = #{P_DSCHFCLT_CD}
+		AND START_TM = #{P_START_TM}
+		AND END_TM = #{P_END_TM}
+		AND OPRN_TM = #{P_OPRN_TM}
+		AND SPECAIL_DC = #{P_SPECAIL_DC}
+	</select>
+	
+		<!-- 수정 - 배출시설 그리드 -->
+	<update id="DSCupdate" parameterType="hashmap">
+		UPDATE @{dzparam_dbname}EH_DSCHFCLTOPR_INFO 
+		SET
+		 DSCHFCLT_CD = #{P_DSCHFCLT_CD},
+		 DSCHFCLT_NM = #{P_DSCHFCLT_NM},
+		 START_TM = #{P_START_TM}, 
+		 END_TM = #{P_END_TM}, 
+		 OPRN_TM = #{P_OPRN_TM}, 
+		 SPECAIL_DC = #{P_SPECAIL_DC}, 
+		UPDATE_ID = #{P_UPDATE_ID}, 
+			UPDATE_IP = #{P_UPDATE_IP},
+			UPDATE_DTS = FN_TODATE(#{P_CM_SYSDATE})
+		WHERE	COMPANY_CD = #{P_COMPANY_CD}
+			AND PLANT_CD = #{P_PLANT_CD} 
+			AND DOC_NO = #{P_DOC_NO}
+			AND DSCHFCLT_CD = #{P_Before_DSCHFCLT_CD}
+	</update>
+	
+		<!-- 삭제 - 배출시설 그리드 -->
+	<delete id="DSCdelete">
+		DELETE
+		FROM	@{dzparam_dbname}EH_DSCHFCLTOPR_INFO
+		WHERE	COMPANY_CD 			= #{company_cd}
+		AND		PLANT_CD			= #{plant_cd} 
+		AND		DOC_NO				= #{doc_no}
+		AND		DSCHFCLT_CD			= #{dschfclt_cd} 
+	</delete>
+	
+		<!-- 방지시설코드 중복체크 -->
+	<select id="PRVdupcheck" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_PRV">
+		SELECT A.PRVNFCLT_CD
+		FROM @{dzparam_dbname}EH_PRVNFCLOPRN_INFO A
+		WHERE	A.COMPANY_CD  = #{company_cd}
+		AND		A.PLANT_CD 	= #{plant_cd}
+		AND		A.DOC_NO = #{doc_no}
+		AND		A.PRVNFCLT_CD = #{prvnfclt_cd}
+	</select>
+	
+		<!-- 삽입 - 방지시설 그리드 -->
+	<insert id="PRVinsert" parameterType="hashmap">
+		INSERT INTO @{dzparam_dbname}EH_PRVNFCLOPRN_INFO (
+				COMPANY_CD 				<!-- [HID] 회사코드 -->
+				,PLANT_CD				<!-- [HID] 공장코드 -->
+				,DOC_NO					<!-- [HID] 문서번호 -->
+				,PRVNFCLT_CD			<!-- 방지시설코드 -->
+				,PRVNFCLT_NM			<!-- 방지시설명 -->
+				,START_TM				<!-- 시작시간 -->
+				,END_TM					<!-- 종료시간 -->
+				,OPRN_TM				<!-- 가동시간 -->
+				,NSHIFT_BWRK_MAN_NM		<!-- 야간근무시간근무 -->
+				,DSHIFT_BWRK_MAN_NM		<!-- 오후근무시간근무 -->
+				,ASHIFT_BWRK_MAN_NM		<!-- 오전근무시간근무 -->
+				,RMK_DC					<!-- 비고내역 -->
+				,INSERT_ID				<!-- [HID] INSERT ID -->
+				,INSERT_IP				<!-- [HID] INSERT IP -->
+				,INSERT_MCADDR_NM		<!-- [HID] INSERT 맥 어드레스 명 -->
+				,INSERT_DTS				<!-- [HID] INSERT 시간 -->
+		) VALUES (
+				#{company_cd}
+				, #{plant_cd}
+				, #{doc_no}
+				, #{prvnfclt_cd}
+				, #{prvnfclt_nm}
+				, #{start_tm}
+				, #{end_tm}
+				, #{oprn_tm}
+				, #{nshift_bwrk_man_nm}
+				, #{dshift_bwrk_man_nm}
+				, #{ashift_bwrk_man_nm}
+				, #{rmk_dc}
+				, #{P_INSERT_ID}
+				, #{P_INSERT_IP}
+				, #{P_INSERT_MCADDR_NM}
+				, FN_TODATE(#{P_CM_SYSDATE}) 
+		)
+	</insert>
+	
+	<select id="PRVupdatecheck" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_PRV">
+		SELECT COMPANY_CD 
+				, PLANT_CD    
+				, DOC_NO
+				, PRVNFCLT_CD
+		FROM @{dzparam_dbname}EH_PRVNFCLOPRN_INFO
+		WHERE COMPANY_CD = #{P_COMPANY_CD}
+		AND PLANT_CD = #{P_PLANT_CD}
+		AND DOC_NO = #{P_DOC_NO}
+		AND PRVNFCLT_CD = #{P_PRVNFCLT_CD}
+		AND START_TM = #{P_START_TM}
+		AND END_TM = #{P_END_TM}
+		AND OPRN_TM = #{P_OPRN_TM}
+		AND RMK_DC = #{P_RMK_DC}
+	</select>
+	
+		<!-- 수정 - 방지시설 그리드 -->
+	<update id="PRVupdate" parameterType="hashmap">
+		UPDATE @{dzparam_dbname}EH_PRVNFCLOPRN_INFO 
+		SET 
+		PRVNFCLT_CD = #{P_PRVNFCLT_CD},
+		PRVNFCLT_NM = #{P_PRVNFCLT_NM}, 
+		START_TM = #{P_START_TM}, 
+		 END_TM = #{P_END_TM}, 
+		 OPRN_TM = #{P_OPRN_TM}, 
+		 NSHIFT_BWRK_MAN_NM = #{P_NSHIFT_BWRK_MAN_NM}, 
+		DSHIFT_BWRK_MAN_NM = #{P_DSHIFT_BWRK_MAN_NM}, 
+		 ASHIFT_BWRK_MAN_NM = #{P_ASHIFT_BWRK_MAN_NM}, 
+		 RMK_DC = #{P_RMK_DC}, 
+		UPDATE_ID = #{P_UPDATE_ID}, 
+			UPDATE_IP = #{P_UPDATE_IP},
+			UPDATE_DTS = FN_TODATE(#{P_CM_SYSDATE})
+		WHERE	COMPANY_CD = #{P_COMPANY_CD}
+			AND PLANT_CD = #{P_PLANT_CD} 
+			AND DOC_NO = #{P_DOC_NO}
+			AND PRVNFCLT_CD = #{P_Before_PRVNFCLT_CD}
+	</update>
+	
+		<!-- 삭제 - 방지시설 그리드 -->
+	<delete id="PRVdelete">
+		DELETE
+		FROM	@{dzparam_dbname}EH_PRVNFCLOPRN_INFO
+		WHERE	COMPANY_CD 			= #{company_cd}
+		AND		PLANT_CD			= #{plant_cd} 
+		AND		DOC_NO				= #{doc_no}
+		AND		PRVNFCLT_CD			= #{prvnfclt_cd} 
+	</delete>
+	
+	
+	<select id="DSCpoplist" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_DSC">
+		SELECT 
+			EWM.COMPANY_CD 
+			, EWM.PLANT_CD 
+			, EWM.DSCHFCLT_CD  
+			, EWM.DSCHFCLT_NM
+		FROM @{dzparam_dbname}EH_WDSCHFCLT_MST EWM
+		WHERE EWM.COMPANY_CD = #{P_COMPANY_CD}
+		AND PLANT_CD = #{P_PLANT_CD}
+		<if test="P_TEXT_KEYWORD != null and P_TEXT_KEYWORD neq ''">
+			  AND ((  UPPER(EWM.DSCHFCLT_CD) LIKE CONCAT(CONCAT('%',UPPER(COALESCE(#{P_TEXT_KEYWORD},''))),'%')) or (  UPPER(EWM.DSCHFCLT_NM) LIKE CONCAT(CONCAT('%',UPPER(COALESCE(#{P_TEXT_KEYWORD},''))),'%')))
+		</if>
+		ORDER BY DSCHFCLT_CD ASC 
+	</select>
+	
+	<select id="DSCpopcheck" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_DSC">
+		SELECT 
+			COMPANY_CD, 
+			PLANT_CD, 
+			DSCHFCLT_CD,  
+			DSCHFCLT_NM
+		FROM @{dzparam_dbname}EH_DSCHFCLTOPR_INFO
+		WHERE COMPANY_CD = #{P_COMPANY_CD}
+		AND PLANT_CD = #{P_PLANT_CD}
+		AND DSCHFCLT_CD = #{P_DSCHFCLT_CD}
+		AND DOC_NO = #{P_DOC_NO}
+	</select>
+	
+	<select id="PRVpoplist" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_PRV">
+		SELECT 
+			EWM.COMPANY_CD 
+			, EWM.PLANT_CD 
+			, EWM.PRVNFCLT_CD  
+			, EWM.PRVNFCLT_NM
+		FROM @{dzparam_dbname}EH_WPRVNFCLT_MST EWM
+		WHERE EWM.COMPANY_CD = #{P_COMPANY_CD}
+		AND EWM.PLANT_CD = #{P_PLANT_CD}
+		<if test="P_TEXT_KEYWORD != null and P_TEXT_KEYWORD neq ''">
+			  AND ((  UPPER(EWM.PRVNFCLT_CD) LIKE CONCAT(CONCAT('%',UPPER(COALESCE(#{P_TEXT_KEYWORD},''))),'%')) or (  UPPER(EWM.PRVNFCLT_NM) LIKE CONCAT(CONCAT('%',UPPER(COALESCE(#{P_TEXT_KEYWORD},''))),'%')))
+		</if>
+		AND EWM.ENV_TSK_FG_NM = '수질'
+		ORDER BY EWM.PRVNFCLT_CD ASC 
+	</select>
+	
+	<select id="PRVpopcheck" resultType="com.douzone.comet.service.eh.evrwaq.models.Evrwaq00100_PRV">
+		SELECT 
+			COMPANY_CD, 
+			PLANT_CD, 
+			PRVNFCLT_CD,  
+			PRVNFCLT_NM
+		FROM @{dzparam_dbname}EH_PRVNFCLOPRN_INFO
+		WHERE COMPANY_CD = #{P_COMPANY_CD}
+		AND PLANT_CD = #{P_PLANT_CD}
+		AND PRVNFCLT_CD = #{P_PRVNFCLT_CD}
+		AND DOC_NO = #{P_DOC_NO}
+	</select>
+</mapper>
